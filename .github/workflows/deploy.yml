@@ -1,13 +1,13 @@
-name: Deploy Flutter Web
+name: Build Flutter Web and Deploy
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -18,13 +18,17 @@ jobs:
       - name: Install dependencies
         working-directory: flutter_app
         run: |
+          # Fix the intl version
+          sed -i 's/intl: ^0.18.1/intl: ^0.18.0/g' pubspec.yaml
+          # Comment out connectivity_plus temporarily
+          sed -i 's/connectivity_plus: ^5.0.1/# connectivity_plus: ^5.0.1/g' pubspec.yaml
           flutter pub get
-          
-      - name: Build for Web
+
+      - name: Build Flutter web
         working-directory: flutter_app
         run: flutter build web --release
 
-      - name: Upload build artifacts
+      - name: Upload build files
         uses: actions/upload-artifact@v4
         with:
           name: web-build
@@ -34,7 +38,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifacts
+      - name: Download build files
         uses: actions/download-artifact@v4
         with:
           name: web-build
@@ -43,9 +47,8 @@ jobs:
         uses: nwtgck/actions-netlify@v3
         with:
           publish-dir: '.'
-          production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub"
+          deploy-message: "Deploy from GitHub Actions"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
