@@ -45,6 +45,15 @@ jobs:
       - name: List files for debugging
         run: ls -la
 
+      - name: Build for web
+        working-directory: flutter_app
+        run: |
+          # Copy web-only pubspec
+          cp pubspec_web.yaml pubspec.yaml
+          # Build
+          flutter pub get
+          flutter build web --release
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3
         with:
