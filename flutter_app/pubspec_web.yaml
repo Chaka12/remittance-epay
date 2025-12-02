@@ -1,0 +1,41 @@
+name: iota_remittance
+description: Zero-cost IOTA/Shimmer remittance MVP for Lesotho - Web Version
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.18.0
+  http: ^1.1.0
+  provider: ^6.1.1
+  crypto: ^3.0.3
+  convert: ^3.1.1
+
+dev_dependencies:
+  intl_utils: ^2.7.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/fonts/
+
+  fonts:
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Bold.ttf
+          weight: 700
+
+flutter_intl:
+  enabled: true
+  localizationsDelegates: true
+  class_name: AppLocalizations
+  main_locale: en
+  arb_dir: lib/l10n
+  output_dir: lib/generated
