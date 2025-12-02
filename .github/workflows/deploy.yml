@@ -15,22 +15,53 @@ jobs:
         with:
           flutter-version: '3.16.9'
 
-      - name: Fix dependencies and build
+      - name: Clean and prepare
         working-directory: flutter_app
         run: |
-          # Fix the intl version conflict
-          sed -i 's/intl: ^0.18.1/intl: ^0.18.0/g' pubspec.yaml
-          # Comment out problematic packages
-          sed -i 's/connectivity_plus: ^5.0.1/# connectivity_plus: ^5.0.1/g' pubspec.yaml
-          sed -i 's/flutter_secure_storage: ^9.0.0/# flutter_secure_storage: ^9.0.0/g' pubspec.yaml
-          sed -i 's/shared_preferences: ^2.2.2/# shared_preferences: ^2.2.2/g' pubspec.yaml
-          sed -i 's/path_provider: ^2.1.1/# path_provider: ^2.1.1/g' pubspec.yaml
+          # Clean any previous builds
+          flutter clean
+          
+          # Create web directory if it doesn't exist
+          mkdir -p web
+
+      - name: Fix dependencies
+        working-directory: flutter_app
+        run: |
+          # Create a clean pubspec for web build
+          cp pubspec.yaml pubspec.yaml.backup
+          
+          # Use sed to create web-only version
+          sed -i '/connectivity_plus/d' pubspec.yaml
+          sed -i '/flutter_secure_storage/d' pubspec.yaml
+          sed -i '/shared_preferences/d' pubspec.yaml
+          sed -i '/path_provider/d' pubspec.yaml
           
           # Get dependencies
           flutter pub get
+
+      - name: Generate localization files
+        working-directory: flutter_app
+        run: |
+          # Generate intl files (skip if fails)
+          flutter pub run intl_utils:generate || echo "intl_utils generation failed, continuing..."
+
+      - name: Build for web
+        working-directory: flutter_app
+        run: |
+          # Build with verbose output
+          echo "Starting web build..."
+          flutter build web --release --verbose 2>&1 | tail -50
           
-          # Build for web - disable analytics to avoid telemetry errors
-          flutter build web --release --no-tree-shake-icons
+          # Check if index.html was created
+          echo "Checking build output..."
+          ls -la build/web/
+          
+          if [ ! -f "build/web/index.html" ]; then
+            echo "ERROR: index.html not found!"
+            echo "Contents of build/web/:"
+            ls -la build/web/
+            exit 1
+          fi
 
       - name: Upload build files
         uses: actions/upload-artifact@v4
