@@ -1,4 +1,4 @@
-name: Build Flutter Web and Deploy
+name: Build and Deploy to Netlify
 on:
   push:
     branches: [main]
@@ -15,18 +15,17 @@ jobs:
         with:
           flutter-version: '3.16.9'
 
-      - name: Install dependencies
+      - name: Fix dependencies and build
         working-directory: flutter_app
         run: |
-          # Fix the intl version
+          # Fix the intl version conflict
           sed -i 's/intl: ^0.18.1/intl: ^0.18.0/g' pubspec.yaml
-          # Comment out connectivity_plus temporarily
+          # Comment out connectivity_plus (causes Android embedding error)
           sed -i 's/connectivity_plus: ^5.0.1/# connectivity_plus: ^5.0.1/g' pubspec.yaml
+          # Get dependencies
           flutter pub get
-
-      - name: Build Flutter web
-        working-directory: flutter_app
-        run: flutter build web --release
+          # Build for web
+          flutter build web --release
 
       - name: Upload build files
         uses: actions/upload-artifact@v4
@@ -42,6 +41,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-build
+
+      - name: List files for debugging
+        run: ls -la
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3
