@@ -10,7 +10,7 @@ A complete zero-cost remittance application built with Flutter and Node.js, leve
 - **Secure**: PIN-based authentication with biometric support
 - **Low-End Optimized**: Designed for 1GB RAM Android devices
 - **Complete Localization**: Full app localization with ARB files
-
+.
 ## 📁 Project Structure
 
 ```
