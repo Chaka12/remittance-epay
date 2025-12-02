@@ -36,6 +36,9 @@ flutter:
         - asset: assets/fonts/OpenSans-Bold.ttf
           weight: 700
 
+dev_dependencies:
+  intl_utils: ^2.7.0
+
 flutter_intl:
   enabled: true
   localizationsDelegates: true
