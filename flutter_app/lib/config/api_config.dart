@@ -10,7 +10,7 @@ class ApiConfig {
   // ============================================================
   
   // PRODUCTION: Your Replit API URL (update this after publishing)
-  static const String productionUrl = 'https://41e33165-58ac-4e14-9bdc-1e4f3bedb1f4-00-uj0rr5uxkqji.riker.replit.dev';
+  static const String productionUrl = 'https://zaga-pay.onrender.com';
   
   // DEVELOPMENT URLs
   // Android emulator uses 10.0.2.2 to reach host machine's localhost
